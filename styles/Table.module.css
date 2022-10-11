@@ -1,0 +1,82 @@
+#table {
+  border-collapse: collapse;
+}
+
+#table thead {
+  height: 50px;
+  border: 1px solid black;
+}
+
+#table th {
+  min-width: 150px;
+  position: relative;
+}
+
+#table td {
+  border-right: 0.5px solid black;
+  border-bottom: 0.5px solid black;
+}
+
+#table {
+  border: 1px solid black;
+  text-align: center;
+  width: 90vw;
+}
+
+.tbody > {
+  width: 100%;
+}
+
+.linkCol {
+  min-width: 550px;
+}
+
+.linkCol > a > p {
+  color: rgb(0, 116, 204);
+  text-decoration: underline;
+}
+.linkCol > a > p:hover {
+  color: rgb(10, 149, 255);
+}
+
+#tableButtonDiv {
+  display: flex;
+  justify-content: space-around;
+  width: 80%;
+  margin-bottom: 20px;
+}
+
+#tableButtonDiv label {
+  margin-right: 10px;
+}
+
+#tableButtonDiv button {
+  font-size: 1.1em;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+#tableButtonDiv select {
+  font-size: 1.1em;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 1400px) {
+  .linkCol {
+    min-width: 1px;
+  }
+  #table th {
+    min-width: 1px;
+  }
+
+  #tableButtonDiv {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin-bottom: 20px;
+  }
+  #selectDiv {
+    display: flex;
+  }
+}
