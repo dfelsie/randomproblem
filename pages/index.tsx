@@ -6,7 +6,7 @@ import { useState } from "react";
 import HeroText from "../Components/HeroText/HeroText";
 import styles from "../styles/Home.module.css";
 import tableStyles from "../styles/Table.module.css";
-import LeetQuestion from "../types/leetQuestion";
+import LeetQuestion from "../types/LeetQuestion";
 import TableHead from "../Components/TableHead/TableHead";
 import SortOption from "../types/SortOption";
 import {
@@ -17,14 +17,14 @@ import {
   comparePercentLiked,
   compareTitles,
 } from "../Utils/SortFuncs";
-import QuestionTableRow from "../Components/Row/tableRow";
+import QuestionTableRow from "../Components/Row/TableRow";
 import {
   speakJson,
   blindJson,
   amazonJSON,
   googleJSON,
   allJson,
-} from "../consts/stringConsts";
+} from "../consts/StringConsts";
 
 const Home: NextPage = () => {
   const [fullProblemList, setfullProblemList] = useState(speakJson);

@@ -1,5 +1,5 @@
 import React from "react";
-import LeetQuestion from "../../types/leetQuestion";
+import LeetQuestion from "../../types/LeetQuestion";
 import tableStyles from "../../styles/Table.module.css";
 type Props = {
   question: LeetQuestion;

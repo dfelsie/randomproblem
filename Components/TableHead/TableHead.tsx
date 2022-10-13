@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import localStyles from "./TableHead.module.css";
 import SortOption from "../../types/SortOption";
-import LeetQuestion from "../../types/leetQuestion";
+import LeetQuestion from "../../types/LeetQuestion";
 type Props = {
   headText: string;
   sortOption: SortOption;

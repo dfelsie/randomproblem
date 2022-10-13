@@ -1,4 +1,4 @@
-import LeetQuestion from "../types/leetQuestion";
+import LeetQuestion from "../types/LeetQuestion";
 
 export const blind75Links = [
   "https://leetcode.com/problems/two-sum/",
