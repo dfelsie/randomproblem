@@ -24,7 +24,7 @@ import {
   amazonJSON,
   googleJSON,
   allJson,
-} from "../consts/StringConsts";
+} from "../consts/Consts";
 
 const Home: NextPage = () => {
   const [fullProblemList, setfullProblemList] = useState(speakJson);
