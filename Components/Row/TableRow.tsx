@@ -1,6 +1,6 @@
 import React from "react";
-import LeetQuestion from "../../types/LeetQuestion";
 import tableStyles from "../../styles/Table.module.css";
+import LeetQuestion from "../../types/LeetQuestion";
 type Props = {
   question: LeetQuestion;
   number: number;
