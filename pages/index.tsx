@@ -81,7 +81,7 @@ const Home: NextPage = () => {
         />
         <div id={tableStyles.tableButtonDiv}>
           <div>
-            <label htmlFor="problem_num">How many questions?</label>
+            <label htmlFor="problem_num">How many random questions?</label>
 
             <input
               name="problem_num"
