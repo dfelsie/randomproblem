@@ -24,16 +24,29 @@ import {
   amazonJSON,
   googleJSON,
   allJson,
+  singleQuestion,
+  singleQuestionOpt,
+  datasetOpts,
+  difficultyOpts,
 } from "../consts/Consts";
+import LeetQuestionOpt from "../types/LeetQuestionOptions";
+import findFunc from "../Utils/FindFuncs";
+import joinClasses from "../Utils/joinClasses";
 
 const Home: NextPage = () => {
   const [fullProblemList, setfullProblemList] = useState(speakJson);
   const [problemList, setproblemList] = useState(fullProblemList);
+  const [assesmentProblemList, setassesmentProblemList] = useState<
+    LeetQuestionOpt[]
+  >([singleQuestionOpt, singleQuestionOpt]);
   const [randNum, setrandNum] = useState("10");
+  const [assessmentTimer, setassessmentTimer] = useState(120);
+  const [assessmentStarted, setassessmentStarted] = useState(false);
   const [sortOption, setsortOption] = useState({
     isAscending: false,
     category: "Number",
   });
+  const [showForm, setshowForm] = useState<boolean | null>(null);
   function getRandom(arr: any[], n: number) {
     let result = new Array(n),
       len = arr.length,
@@ -99,6 +112,7 @@ const Home: NextPage = () => {
               Get Problems
             </button>
           </div>
+
           <div id={tableStyles.selectDiv}>
             <label htmlFor="questionlist">Choose a question set</label>
             <select
@@ -149,6 +163,182 @@ const Home: NextPage = () => {
                 All Questions
               </option>
             </select>
+          </div>
+        </div>
+        <div>
+          <h4>Create practice test!</h4>
+          <button
+            onClick={() => {
+              setshowForm((prev) => !prev);
+              console.log(assesmentProblemList);
+            }}
+          >
+            &#8964; &#8964;
+          </button>
+          <div
+            className={joinClasses(
+              showForm ? tableStyles.showHeight : tableStyles.hideHeight
+            )}
+          >
+            <div className={tableStyles.subForm}>
+              Create test form...
+              <div className={tableStyles.selectColDiv}>
+                <label htmlFor={`AssesmentDatasetSelectionAll`}>
+                  Dataset For All
+                </label>
+                <select
+                  name={`AssesmentDatasetSelectionAll`}
+                  id={`AssesmentDatasetSelectionAll`}
+                  defaultValue={""}
+                >
+                  {datasetOpts.map((datasetNameVal, n) => (
+                    <option
+                      key={`companyOpt${n}ForSelectAll`}
+                      onClick={() => {
+                        setassesmentProblemList([
+                          ...assesmentProblemList.map((val, ind) => {
+                            const nVal: LeetQuestionOpt = { ...val };
+                            nVal.dataset = datasetNameVal;
+                            return nVal;
+                          }),
+                        ]);
+                      }}
+                    >
+                      {datasetNameVal}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <ul>
+                {assesmentProblemList.map((val, i) => (
+                  <li
+                    className={tableStyles.problemListQuestion}
+                    key={`AssesmentQuestionNum${i}`}
+                  >
+                    <h6> {`Question ${i + 1}`}</h6>
+                    <div className={tableStyles.selectColDiv}>
+                      <label htmlFor={`AssesmentDatasetSelection${i}`}>
+                        Dataset
+                      </label>
+                      <select
+                        name={`AssesmentDatasetSelection${i}`}
+                        id={`AssesmentDatasetSelection${i}`}
+                        value={assesmentProblemList[i].dataset}
+                        onChange={() => {}}
+                      >
+                        {datasetOpts.map((datasetNameVal, n) => (
+                          <option
+                            key={`companyOpt${n}ForSelect${i}`}
+                            onClick={() => {
+                              setassesmentProblemList([
+                                ...assesmentProblemList.map((val, ind) => {
+                                  if (ind === i) {
+                                    const nVal: LeetQuestionOpt = { ...val };
+                                    nVal.dataset = datasetNameVal;
+                                    return nVal;
+                                  }
+                                  return val;
+                                }),
+                              ]);
+                            }}
+                          >
+                            {datasetNameVal}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className={tableStyles.selectColDiv}>
+                      <label htmlFor={`AssesmentDifficultySelection${i}`}>
+                        Difficulty
+                      </label>
+                      <select
+                        name={`AssesmentDifficultySelection${i}`}
+                        id={`AssesmentDifficultySelection${i}`}
+                        value={assesmentProblemList[i].difficulty}
+                        onChange={() => {}}
+                      >
+                        {difficultyOpts.map((difficultyNameVal, n) => (
+                          <option
+                            key={`difficultyOpt${n}ForSelect${i}`}
+                            onClick={() => {
+                              setassesmentProblemList([
+                                ...assesmentProblemList.map((val, ind) => {
+                                  if (ind === i) {
+                                    const nVal: LeetQuestionOpt = { ...val };
+                                    nVal.difficulty = difficultyNameVal;
+                                    return nVal;
+                                  }
+                                  return val;
+                                }),
+                              ]);
+                            }}
+                          >
+                            {difficultyNameVal}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      onClick={() => {
+                        console.log(assesmentProblemList);
+                        const firstHalf = assesmentProblemList.slice(0, i);
+                        const secondHalf = assesmentProblemList.slice(i + 1);
+                        setassesmentProblemList([...firstHalf, ...secondHalf]);
+                      }}
+                    >
+                      X
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <label htmlFor="assessmentDuration">How many minutes?</label>
+              <input
+                name="assessmentDuration"
+                type={"number"}
+                min={5}
+                max={150}
+                onChange={(e) => {
+                  const timeInt = parseInt(e.target.value);
+                  if (timeInt === NaN) {
+                    return;
+                  }
+                  setassessmentTimer(parseInt(e.target.value));
+                }}
+              ></input>
+              <div>
+                <button
+                  onClick={() => {
+                    setassesmentProblemList([
+                      ...assesmentProblemList,
+                      singleQuestionOpt,
+                    ]);
+                  }}
+                >
+                  Add Question
+                </button>
+                {/* <button
+                onClick={() => {
+                  setassesmentProblemList([
+                    ...assesmentProblemList.map((val) => {
+                      return singleQuestionOpt;
+                    }),
+                  ]);
+                }}
+              >
+                Reset All
+              </button> */}
+                <button
+                  onClick={() => {
+                    const problemList = findFunc(assesmentProblemList);
+                    console.log(problemList);
+                    setproblemList([...problemList]);
+                  }}
+                >
+                  Create Assessment!
+                </button>
+                <div id={tableStyles.preTableSpaceDiv}></div>
+              </div>
+            </div>
           </div>
         </div>
         <table id={tableStyles.table}>
@@ -205,13 +395,18 @@ const Home: NextPage = () => {
             </tr>
           </thead>
           <tbody id={tableStyles.tbody}>
-            {problemList.map((val, i) => (
-              <QuestionTableRow
-                key={`QuestionNum${i}`}
-                question={val}
-                number={i + 1}
-              />
-            ))}
+            {problemList.map((val, i) => {
+              if (val.title === "None") {
+                return null;
+              }
+              return (
+                <QuestionTableRow
+                  key={`QuestionNum${i}`}
+                  question={val}
+                  number={i + 1}
+                />
+              );
+            })}
           </tbody>
         </table>
         <p>

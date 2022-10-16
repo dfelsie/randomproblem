@@ -1,4 +1,5 @@
 import LeetQuestion from "../types/LeetQuestion";
+import LeetQuestionOpt from "../types/LeetQuestionOptions";
 
 export const blind75Links = [
   "https://leetcode.com/problems/two-sum/",
@@ -3616,3 +3617,39 @@ export const blindJson: LeetQuestion[] = [
 export const allJson: LeetQuestion[] = [
   ...new Set(amazonJSON.concat(googleJSON, speakJson, blindJson)),
 ];
+
+export const singleQuestion: LeetQuestion = {
+  title: "1. Two Sum",
+  difficulty: "Easy",
+  numLikes: 38723,
+  numDislikes: 1241,
+  link: "https://leetcode.com/problems/two-sum",
+};
+export const singleQuestionOpt: LeetQuestionOpt = {
+  difficulty: "Any",
+  dataset: "Any",
+};
+
+export const labelToDataset: { [key: string]: LeetQuestion[] } = {
+  Speak: speakJson,
+  Amazon: amazonJSON,
+  Google: amazonJSON,
+  "Blind 75": blindJson,
+  Any: allJson,
+};
+
+export const datasetOpts = ["Speak", "Amazon", "Google", "Blind 75", "Any"];
+export const difficultyOpts: ("Easy" | "Medium" | "Hard" | "Any")[] = [
+  "Easy",
+  "Medium",
+  "Hard",
+  "Any",
+];
+
+export const dummyQuestion: LeetQuestion = {
+  difficulty: "Easy",
+  link: "None",
+  numDislikes: 0,
+  numLikes: 0,
+  title: "None",
+};
