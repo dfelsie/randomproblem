@@ -78,13 +78,24 @@
   margin-bottom: 10px;
 }
 
-.hideHeight {
+.assessmentForm {
   overflow: hidden;
-  height: 0;
+}
+
+.hideHeight {
+  animation-duration: 1s;
+  animation-name: hideHeightAni;
+}
+
+.hiddenHeight {
+  height: 150px;
+}
+.showedHeight {
+  height: 0px;
 }
 
 .showHeight {
-  animation-duration: 2s;
+  animation-duration: 1s;
   animation-name: showHeightAni;
 }
 
@@ -99,7 +110,7 @@
 }
 @keyframes hideHeightAni {
   from {
-    height: auto;
+    height: 150px;
   }
 
   to {

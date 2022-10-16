@@ -170,13 +170,28 @@ const Home: NextPage = () => {
           <button
             onClick={() => {
               setshowForm((prev) => !prev);
+              const formHolder = document.getElementById(
+                "assessmentFormHolder"
+              );
+              formHolder?.addEventListener("animationend", () => {
+                if (showForm) {
+                  formHolder.classList.add(tableStyles.showedHeight);
+                  formHolder.classList.remove(tableStyles.showHeight);
+                  return;
+                }
+                formHolder.classList.add(tableStyles.hiddenHeight);
+                formHolder.classList.remove(tableStyles.hideHeight);
+              });
+
               console.log(assesmentProblemList);
             }}
           >
             &#8964; &#8964;
           </button>
           <div
+            id={"assessmentFormHolder"}
             className={joinClasses(
+              tableStyles.assessmentForm,
               showForm ? tableStyles.showHeight : tableStyles.hideHeight
             )}
           >
