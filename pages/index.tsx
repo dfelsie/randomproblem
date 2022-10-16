@@ -32,7 +32,33 @@ import {
 import LeetQuestionOpt from "../types/LeetQuestionOptions";
 import findFunc from "../Utils/FindFuncs";
 import joinClasses from "../Utils/joinClasses";
+import { getVids } from "../Utils/FetchFuncs";
+import compareTime from "../Utils/TimeFunc";
 
+function clockRender(assessmentStarted: boolean, assessmentTimer: number): any {
+  /* assessmentStarted
+    ? `${Math.floor(assessmentTimer / 60)}h:${
+        assessmentTimer % 60 > 9
+          ? (assessmentTimer % 60) + "m"
+          : "0" + (assessmentTimer % 60) + "m"
+      }`
+    : ""; */
+
+  if (assessmentStarted) {
+    return (
+      <p>
+        <span>{Math.floor(assessmentTimer / 60)}</span>h {"  "}
+        <span>
+          {assessmentTimer % 60 > 9
+            ? assessmentTimer % 60
+            : "0" + (assessmentTimer % 60)}
+        </span>
+        m
+      </p>
+    );
+  }
+  return <p></p>;
+}
 const Home: NextPage = () => {
   const [fullProblemList, setfullProblemList] = useState(speakJson);
   const [problemList, setproblemList] = useState(fullProblemList);
@@ -40,13 +66,16 @@ const Home: NextPage = () => {
     LeetQuestionOpt[]
   >([singleQuestionOpt, singleQuestionOpt]);
   const [randNum, setrandNum] = useState("10");
-  const [assessmentTimer, setassessmentTimer] = useState(120);
+  const [assessmentTimer, setassessmentTimer] = useState(105);
   const [assessmentStarted, setassessmentStarted] = useState(false);
+  const [assessmentFinished, setassessmentFinished] = useState(false);
+  const [intervalId, setIntervalId] = useState<NodeJS.Timer>();
   const [sortOption, setsortOption] = useState({
     isAscending: false,
     category: "Number",
   });
-  const [showForm, setshowForm] = useState<boolean | null>(null);
+  //const [showForm, setshowForm] = useState<boolean | null>(null);
+  const [vidList, setVidList] = useState([]);
   function getRandom(arr: any[], n: number) {
     let result = new Array(n),
       len = arr.length,
@@ -167,36 +196,10 @@ const Home: NextPage = () => {
         </div>
         <div>
           <h4>Create practice test!</h4>
-          <button
-            onClick={() => {
-              setshowForm((prev) => !prev);
-              const formHolder = document.getElementById(
-                "assessmentFormHolder"
-              );
-              formHolder?.addEventListener("animationend", () => {
-                if (showForm) {
-                  formHolder.classList.add(tableStyles.showedHeight);
-                  formHolder.classList.remove(tableStyles.showHeight);
-                  return;
-                }
-                formHolder.classList.add(tableStyles.hiddenHeight);
-                formHolder.classList.remove(tableStyles.hideHeight);
-              });
 
-              console.log(assesmentProblemList);
-            }}
-          >
-            &#8964; &#8964;
-          </button>
-          <div
-            id={"assessmentFormHolder"}
-            className={joinClasses(
-              tableStyles.assessmentForm,
-              showForm ? tableStyles.showHeight : tableStyles.hideHeight
-            )}
-          >
+          <details id={"assessmentFormHolder"}>
+            <summary>Create test form</summary>
             <div className={tableStyles.subForm}>
-              Create test form...
               <div className={tableStyles.selectColDiv}>
                 <label htmlFor={`AssesmentDatasetSelectionAll`}>
                   Dataset For All
@@ -312,6 +315,7 @@ const Home: NextPage = () => {
                 type={"number"}
                 min={5}
                 max={150}
+                defaultValue={105}
                 onChange={(e) => {
                   const timeInt = parseInt(e.target.value);
                   if (timeInt === NaN) {
@@ -344,17 +348,53 @@ const Home: NextPage = () => {
               </button> */}
                 <button
                   onClick={() => {
+                    if (assessmentStarted) {
+                      setassessmentStarted(false);
+                      setassessmentFinished(true);
+                      clearInterval(intervalId);
+                      return;
+                    }
                     const problemList = findFunc(assesmentProblemList);
                     console.log(problemList);
                     setproblemList([...problemList]);
+                    setassessmentStarted(true);
+                    const timePrev = new Date();
+                    //Callback problem, it's
+                    //getting and memorizing variable vals
+                    //Not really a huge deal except for
+                    //Stopping when timer hits 0
+                    //And stopping the assessment
+                    const intId = setInterval(() => {
+                      console.log(
+                        new Date().getTime() - timePrev.getTime(),
+                        assessmentTimer * 60 * 1000
+                      );
+                      if (
+                        new Date().getTime() - timePrev.getTime() >=
+                        assessmentTimer * 60 * 1000
+                      ) {
+                        console.log("Done!");
+                        clearInterval(intervalId);
+                        setassessmentTimer((prev) => prev - 1);
+                        getVids(problemList.map((val) => val.title));
+                        return;
+                      }
+
+                      //console.log("Tick", assessmentTimer);
+                      //compareTime(timeNow, assessmentTimer);
+                      setassessmentTimer((prev) => prev - 1);
+                    }, 1000 * 60);
+                    setIntervalId(intId);
                   }}
                 >
-                  Create Assessment!
+                  {assessmentStarted ? "Stop Assessment" : "Create Assessment"}
                 </button>
-                <div id={tableStyles.preTableSpaceDiv}></div>
+                <div id={tableStyles.preTableSpaceDiv}>
+                  {clockRender(assessmentStarted, assessmentTimer)}
+                </div>
               </div>
             </div>
-          </div>
+          </details>
         </div>
         <table id={tableStyles.table}>
           <thead>
@@ -424,6 +464,7 @@ const Home: NextPage = () => {
             })}
           </tbody>
         </table>
+        <div id="youtubeVids"></div>
         <p>
           Note: premium questions have been removed, which is why the blind 75
           only has 70 questions.
