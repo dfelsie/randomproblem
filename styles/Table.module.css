@@ -21,7 +21,12 @@
   border: 1px solid black;
   text-align: center;
   width: 90vw;
-  margin-top: 20px;
+}
+
+#assessmentButtonDiv {
+  justify-content: center;
+  display: flex;
+  height: 25px;
 }
 
 .selectColDiv {
@@ -31,6 +36,18 @@
 
 .subForm ul {
   padding: 0;
+}
+
+#formHolderHolder {
+  width: 33%;
+  min-width: 280px;
+}
+
+#numQuestionsInput {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #formSum {
@@ -46,7 +63,17 @@
 }
 
 #preTableSpaceDiv {
-  height: 75px;
+  height: 25px;
+}
+
+#clockDiv {
+  margin-top: 25px;
+  text-align: center;
+  font-size: 1.5em;
+}
+
+#helpfulNoteBottom {
+  margin-top: 20px;
 }
 
 .tbody > {

@@ -54,7 +54,7 @@ function clockRender(assessmentStarted: boolean, assessmentTimer: number): any {
             ? assessmentTimer % 60
             : "0" + (assessmentTimer % 60)}
         </span>
-        m
+        m remaining
       </p>
     );
   }
@@ -195,7 +195,7 @@ const Home: NextPage = () => {
             </select>
           </div>
         </div>
-        <div>
+        <div id={tableStyles.formHolderHolder}>
           <h4>Create practice test!</h4>
 
           <details id={"assessmentFormHolder"}>
@@ -234,7 +234,7 @@ const Home: NextPage = () => {
                     className={tableStyles.problemListQuestion}
                     key={`AssesmentQuestionNum${i}`}
                   >
-                    <h6> {`Question ${i + 1}`}</h6>
+                    <h3> {`Question ${i + 1}`}</h3>
                     <div className={tableStyles.selectColDiv}>
                       <label htmlFor={`AssesmentDatasetSelection${i}`}>
                         Dataset
@@ -309,25 +309,27 @@ const Home: NextPage = () => {
                   </li>
                 ))}
               </ul>
-              <label htmlFor="assessmentDuration">How many minutes?</label>
-              <input
-                name="assessmentDuration"
-                type={"number"}
-                min={5}
-                max={150}
-                defaultValue={105}
-                onChange={(e) => {
-                  const timeInt = parseInt(e.target.value);
-                  if (timeInt === NaN) {
-                    return;
-                  }
-                  setassessmentTimer(parseInt(e.target.value));
-                }}
-              ></input>
-              <div>
+              <div id={tableStyles.numQuestionsInput}>
+                <label htmlFor="assessmentDuration">How many minutes?</label>
+                <input
+                  name="assessmentDuration"
+                  type={"number"}
+                  min={5}
+                  max={150}
+                  defaultValue={105}
+                  onChange={(e) => {
+                    const timeInt = parseInt(e.target.value);
+                    if (timeInt === NaN) {
+                      return;
+                    }
+                    setassessmentTimer(parseInt(e.target.value));
+                  }}
+                ></input>
+              </div>
+              <div id={tableStyles.assessmentButtonDiv}>
                 <button
                   onClick={() => {
-                    if (assesmentProblemList.length <= 10) {
+                    if (assesmentProblemList.length >= 10) {
                       return;
                     }
                     setassesmentProblemList([
@@ -352,9 +354,21 @@ const Home: NextPage = () => {
                 <button
                   onClick={() => {
                     if (assessmentStarted) {
-                      setassessmentStarted(false);
-                      setassessmentFinished(true);
+                      const problemList = findFunc(assesmentProblemList);
                       clearInterval(intervalId);
+                      setassessmentTimer((prev) => 0);
+                      const ary = [];
+                      for (let i = 0; i < problemList.length; i++) {
+                        const problemYTLinks = ytLinks.find((val) => {
+                          return val.title === problemList[i].title;
+                        });
+                        if (problemYTLinks === undefined) {
+                          continue;
+                        }
+                        ary.push(problemYTLinks.links);
+                      }
+                      setVidList(ary);
+
                       return;
                     }
                     const problemList = findFunc(assesmentProblemList);
@@ -392,10 +406,11 @@ const Home: NextPage = () => {
                 >
                   {assessmentStarted ? "Stop Assessment" : "Create Assessment"}
                 </button>
-                <div id={tableStyles.preTableSpaceDiv}>
-                  {clockRender(assessmentStarted, assessmentTimer)}
-                </div>
               </div>
+              <div id={tableStyles.clockDiv}>
+                {clockRender(assessmentStarted, assessmentTimer)}
+              </div>
+              <div id={tableStyles.preTableSpaceDiv}></div>
             </div>
           </details>
         </div>
@@ -483,7 +498,7 @@ const Home: NextPage = () => {
             </div>
           ))}
         </div>
-        <p>
+        <p id={tableStyles.helpfulNoteBottom}>
           Note: premium questions have been removed, which is why the blind 75
           only has 70 questions.
         </p>
