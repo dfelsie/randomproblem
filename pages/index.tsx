@@ -28,12 +28,13 @@ import {
   singleQuestionOpt,
   datasetOpts,
   difficultyOpts,
+  ytLinks,
 } from "../consts/Consts";
 import LeetQuestionOpt from "../types/LeetQuestionOptions";
 import findFunc from "../Utils/FindFuncs";
 import joinClasses from "../Utils/joinClasses";
 import { getVids } from "../Utils/FetchFuncs";
-import compareTime from "../Utils/TimeFunc";
+import VidLink from "../Components/VidLink/VidLink";
 
 function clockRender(assessmentStarted: boolean, assessmentTimer: number): any {
   /* assessmentStarted
@@ -75,7 +76,7 @@ const Home: NextPage = () => {
     category: "Number",
   });
   //const [showForm, setshowForm] = useState<boolean | null>(null);
-  const [vidList, setVidList] = useState([]);
+  const [vidList, setVidList] = useState<any[]>([]);
   function getRandom(arr: any[], n: number) {
     let result = new Array(n),
       len = arr.length,
@@ -198,11 +199,11 @@ const Home: NextPage = () => {
           <h4>Create practice test!</h4>
 
           <details id={"assessmentFormHolder"}>
-            <summary>Create test form</summary>
+            <summary id={tableStyles.formSum}>Create test form</summary>
             <div className={tableStyles.subForm}>
               <div className={tableStyles.selectColDiv}>
                 <label htmlFor={`AssesmentDatasetSelectionAll`}>
-                  Dataset For All
+                  Set Dataset For All Questions
                 </label>
                 <select
                   name={`AssesmentDatasetSelectionAll`}
@@ -298,7 +299,6 @@ const Home: NextPage = () => {
                     </div>
                     <button
                       onClick={() => {
-                        console.log(assesmentProblemList);
                         const firstHalf = assesmentProblemList.slice(0, i);
                         const secondHalf = assesmentProblemList.slice(i + 1);
                         setassesmentProblemList([...firstHalf, ...secondHalf]);
@@ -327,6 +327,9 @@ const Home: NextPage = () => {
               <div>
                 <button
                   onClick={() => {
+                    if (assesmentProblemList.length <= 10) {
+                      return;
+                    }
                     setassesmentProblemList([
                       ...assesmentProblemList,
                       singleQuestionOpt,
@@ -355,33 +358,33 @@ const Home: NextPage = () => {
                       return;
                     }
                     const problemList = findFunc(assesmentProblemList);
-                    console.log(problemList);
                     setproblemList([...problemList]);
                     setassessmentStarted(true);
                     const timePrev = new Date();
-                    //Callback problem, it's
-                    //getting and memorizing variable vals
-                    //Not really a huge deal except for
-                    //Stopping when timer hits 0
-                    //And stopping the assessment
                     const intId = setInterval(() => {
-                      console.log(
-                        new Date().getTime() - timePrev.getTime(),
-                        assessmentTimer * 60 * 1000
-                      );
+                      //Note: Timer slightly off, but shouldn't matter
+                      //Probably only off bcuz of getTime/event loop weirdness
                       if (
                         new Date().getTime() - timePrev.getTime() >=
                         assessmentTimer * 60 * 1000
                       ) {
-                        console.log("Done!");
                         clearInterval(intervalId);
                         setassessmentTimer((prev) => prev - 1);
-                        getVids(problemList.map((val) => val.title));
+                        const ary = [];
+                        for (let i = 0; i < problemList.length; i++) {
+                          const problemYTLinks = ytLinks.find((val) => {
+                            return val.title === problemList[i].title;
+                          });
+                          if (problemYTLinks === undefined) {
+                            continue;
+                          }
+                          ary.push(problemYTLinks.links);
+                        }
+                        setVidList(ary);
+
                         return;
                       }
 
-                      //console.log("Tick", assessmentTimer);
-                      //compareTime(timeNow, assessmentTimer);
                       setassessmentTimer((prev) => prev - 1);
                     }, 1000 * 60);
                     setIntervalId(intId);
@@ -464,7 +467,22 @@ const Home: NextPage = () => {
             })}
           </tbody>
         </table>
-        <div id="youtubeVids"></div>
+        <div id="youtubeVids">
+          {vidList.map((vidLinkList, i) => (
+            <div key={`VidColNum${i}`}>
+              <h4>{problemList[i].title}</h4>
+              <div className={tableStyles.vidLinkRow} key={`VidRowNum${i}`}>
+                {vidLinkList.map((val: any, i: number) => (
+                  <VidLink
+                    vidTitle={val.vidTitle}
+                    vidLink={val.link}
+                    key={`VidNum${i}`}
+                  ></VidLink>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
         <p>
           Note: premium questions have been removed, which is why the blind 75
           only has 70 questions.

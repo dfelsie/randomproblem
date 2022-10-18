@@ -29,11 +29,20 @@
   flex-direction: column;
 }
 
+.subForm ul {
+  padding: 0;
+}
+
+#formSum {
+  margin-bottom: 15px;
+}
+
 .problemListQuestion {
   display: flex;
   list-style: none;
   margin-top: 10px;
   margin-bottom: 10px;
+  justify-content: space-between;
 }
 
 #preTableSpaceDiv {
@@ -99,6 +108,15 @@
   animation-name: showHeightAni;
 }
 
+.vidLinkRow {
+  display: flex;
+}
+.vidLinkCol {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
 @keyframes showHeightAni {
   from {
     height: 0;
@@ -119,6 +137,11 @@
 }
 
 @media (max-width: 1400px) {
+  .vidLinkRow {
+    display: flex;
+    flex-direction: column;
+  }
+
   .linkCol {
     min-width: 1px;
   }
