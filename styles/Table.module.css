@@ -21,6 +21,32 @@
   border: 1px solid black;
   text-align: center;
   width: 90vw;
+  margin-top: 20px;
+}
+
+.selectColDiv {
+  display: flex;
+  flex-direction: column;
+}
+
+.subForm ul {
+  padding: 0;
+}
+
+#formSum {
+  margin-bottom: 15px;
+}
+
+.problemListQuestion {
+  display: flex;
+  list-style: none;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  justify-content: space-between;
+}
+
+#preTableSpaceDiv {
+  height: 75px;
 }
 
 .tbody > {
@@ -43,7 +69,6 @@
   display: flex;
   justify-content: space-around;
   width: 80%;
-  margin-bottom: 20px;
 }
 
 #tableButtonDiv label {
@@ -62,7 +87,61 @@
   margin-bottom: 10px;
 }
 
+.assessmentForm {
+  overflow: hidden;
+}
+
+.hideHeight {
+  animation-duration: 1s;
+  animation-name: hideHeightAni;
+}
+
+.hiddenHeight {
+  height: 150px;
+}
+.showedHeight {
+  height: 0px;
+}
+
+.showHeight {
+  animation-duration: 1s;
+  animation-name: showHeightAni;
+}
+
+.vidLinkRow {
+  display: flex;
+}
+.vidLinkCol {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+@keyframes showHeightAni {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: 150px;
+  }
+}
+@keyframes hideHeightAni {
+  from {
+    height: 150px;
+  }
+
+  to {
+    height: 0;
+  }
+}
+
 @media (max-width: 1400px) {
+  .vidLinkRow {
+    display: flex;
+    flex-direction: column;
+  }
+
   .linkCol {
     min-width: 1px;
   }

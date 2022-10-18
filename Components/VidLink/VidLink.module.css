@@ -1,0 +1,11 @@
+.vidDiv {
+  width: 250px;
+  height: 200px;
+}
+
+@media (max-width: 1400px) {
+  .vidDiv {
+    width: 200px;
+    height: 175px;
+  }
+}

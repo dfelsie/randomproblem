@@ -24,16 +24,59 @@ import {
   amazonJSON,
   googleJSON,
   allJson,
+  singleQuestion,
+  singleQuestionOpt,
+  datasetOpts,
+  difficultyOpts,
+  ytLinks,
 } from "../consts/Consts";
+import LeetQuestionOpt from "../types/LeetQuestionOptions";
+import findFunc from "../Utils/FindFuncs";
+import joinClasses from "../Utils/joinClasses";
+import { getVids } from "../Utils/FetchFuncs";
+import VidLink from "../Components/VidLink/VidLink";
 
+function clockRender(assessmentStarted: boolean, assessmentTimer: number): any {
+  /* assessmentStarted
+    ? `${Math.floor(assessmentTimer / 60)}h:${
+        assessmentTimer % 60 > 9
+          ? (assessmentTimer % 60) + "m"
+          : "0" + (assessmentTimer % 60) + "m"
+      }`
+    : ""; */
+
+  if (assessmentStarted) {
+    return (
+      <p>
+        <span>{Math.floor(assessmentTimer / 60)}</span>h {"  "}
+        <span>
+          {assessmentTimer % 60 > 9
+            ? assessmentTimer % 60
+            : "0" + (assessmentTimer % 60)}
+        </span>
+        m
+      </p>
+    );
+  }
+  return <p></p>;
+}
 const Home: NextPage = () => {
   const [fullProblemList, setfullProblemList] = useState(speakJson);
   const [problemList, setproblemList] = useState(fullProblemList);
+  const [assesmentProblemList, setassesmentProblemList] = useState<
+    LeetQuestionOpt[]
+  >([singleQuestionOpt, singleQuestionOpt]);
   const [randNum, setrandNum] = useState("10");
+  const [assessmentTimer, setassessmentTimer] = useState(105);
+  const [assessmentStarted, setassessmentStarted] = useState(false);
+  const [assessmentFinished, setassessmentFinished] = useState(false);
+  const [intervalId, setIntervalId] = useState<NodeJS.Timer>();
   const [sortOption, setsortOption] = useState({
     isAscending: false,
     category: "Number",
   });
+  //const [showForm, setshowForm] = useState<boolean | null>(null);
+  const [vidList, setVidList] = useState<any[]>([]);
   function getRandom(arr: any[], n: number) {
     let result = new Array(n),
       len = arr.length,
@@ -99,6 +142,7 @@ const Home: NextPage = () => {
               Get Problems
             </button>
           </div>
+
           <div id={tableStyles.selectDiv}>
             <label htmlFor="questionlist">Choose a question set</label>
             <select
@@ -150,6 +194,210 @@ const Home: NextPage = () => {
               </option>
             </select>
           </div>
+        </div>
+        <div>
+          <h4>Create practice test!</h4>
+
+          <details id={"assessmentFormHolder"}>
+            <summary id={tableStyles.formSum}>Create test form</summary>
+            <div className={tableStyles.subForm}>
+              <div className={tableStyles.selectColDiv}>
+                <label htmlFor={`AssesmentDatasetSelectionAll`}>
+                  Set Dataset For All Questions
+                </label>
+                <select
+                  name={`AssesmentDatasetSelectionAll`}
+                  id={`AssesmentDatasetSelectionAll`}
+                  defaultValue={""}
+                >
+                  {datasetOpts.map((datasetNameVal, n) => (
+                    <option
+                      key={`companyOpt${n}ForSelectAll`}
+                      onClick={() => {
+                        setassesmentProblemList([
+                          ...assesmentProblemList.map((val, ind) => {
+                            const nVal: LeetQuestionOpt = { ...val };
+                            nVal.dataset = datasetNameVal;
+                            return nVal;
+                          }),
+                        ]);
+                      }}
+                    >
+                      {datasetNameVal}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <ul>
+                {assesmentProblemList.map((val, i) => (
+                  <li
+                    className={tableStyles.problemListQuestion}
+                    key={`AssesmentQuestionNum${i}`}
+                  >
+                    <h6> {`Question ${i + 1}`}</h6>
+                    <div className={tableStyles.selectColDiv}>
+                      <label htmlFor={`AssesmentDatasetSelection${i}`}>
+                        Dataset
+                      </label>
+                      <select
+                        name={`AssesmentDatasetSelection${i}`}
+                        id={`AssesmentDatasetSelection${i}`}
+                        value={assesmentProblemList[i].dataset}
+                        onChange={() => {}}
+                      >
+                        {datasetOpts.map((datasetNameVal, n) => (
+                          <option
+                            key={`companyOpt${n}ForSelect${i}`}
+                            onClick={() => {
+                              setassesmentProblemList([
+                                ...assesmentProblemList.map((val, ind) => {
+                                  if (ind === i) {
+                                    const nVal: LeetQuestionOpt = { ...val };
+                                    nVal.dataset = datasetNameVal;
+                                    return nVal;
+                                  }
+                                  return val;
+                                }),
+                              ]);
+                            }}
+                          >
+                            {datasetNameVal}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className={tableStyles.selectColDiv}>
+                      <label htmlFor={`AssesmentDifficultySelection${i}`}>
+                        Difficulty
+                      </label>
+                      <select
+                        name={`AssesmentDifficultySelection${i}`}
+                        id={`AssesmentDifficultySelection${i}`}
+                        value={assesmentProblemList[i].difficulty}
+                        onChange={() => {}}
+                      >
+                        {difficultyOpts.map((difficultyNameVal, n) => (
+                          <option
+                            key={`difficultyOpt${n}ForSelect${i}`}
+                            onClick={() => {
+                              setassesmentProblemList([
+                                ...assesmentProblemList.map((val, ind) => {
+                                  if (ind === i) {
+                                    const nVal: LeetQuestionOpt = { ...val };
+                                    nVal.difficulty = difficultyNameVal;
+                                    return nVal;
+                                  }
+                                  return val;
+                                }),
+                              ]);
+                            }}
+                          >
+                            {difficultyNameVal}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const firstHalf = assesmentProblemList.slice(0, i);
+                        const secondHalf = assesmentProblemList.slice(i + 1);
+                        setassesmentProblemList([...firstHalf, ...secondHalf]);
+                      }}
+                    >
+                      X
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <label htmlFor="assessmentDuration">How many minutes?</label>
+              <input
+                name="assessmentDuration"
+                type={"number"}
+                min={5}
+                max={150}
+                defaultValue={105}
+                onChange={(e) => {
+                  const timeInt = parseInt(e.target.value);
+                  if (timeInt === NaN) {
+                    return;
+                  }
+                  setassessmentTimer(parseInt(e.target.value));
+                }}
+              ></input>
+              <div>
+                <button
+                  onClick={() => {
+                    if (assesmentProblemList.length <= 10) {
+                      return;
+                    }
+                    setassesmentProblemList([
+                      ...assesmentProblemList,
+                      singleQuestionOpt,
+                    ]);
+                  }}
+                >
+                  Add Question
+                </button>
+                {/* <button
+                onClick={() => {
+                  setassesmentProblemList([
+                    ...assesmentProblemList.map((val) => {
+                      return singleQuestionOpt;
+                    }),
+                  ]);
+                }}
+              >
+                Reset All
+              </button> */}
+                <button
+                  onClick={() => {
+                    if (assessmentStarted) {
+                      setassessmentStarted(false);
+                      setassessmentFinished(true);
+                      clearInterval(intervalId);
+                      return;
+                    }
+                    const problemList = findFunc(assesmentProblemList);
+                    setproblemList([...problemList]);
+                    setassessmentStarted(true);
+                    const timePrev = new Date();
+                    const intId = setInterval(() => {
+                      //Note: Timer slightly off, but shouldn't matter
+                      //Probably only off bcuz of getTime/event loop weirdness
+                      if (
+                        new Date().getTime() - timePrev.getTime() >=
+                        assessmentTimer * 60 * 1000
+                      ) {
+                        clearInterval(intervalId);
+                        setassessmentTimer((prev) => prev - 1);
+                        const ary = [];
+                        for (let i = 0; i < problemList.length; i++) {
+                          const problemYTLinks = ytLinks.find((val) => {
+                            return val.title === problemList[i].title;
+                          });
+                          if (problemYTLinks === undefined) {
+                            continue;
+                          }
+                          ary.push(problemYTLinks.links);
+                        }
+                        setVidList(ary);
+
+                        return;
+                      }
+
+                      setassessmentTimer((prev) => prev - 1);
+                    }, 1000 * 60);
+                    setIntervalId(intId);
+                  }}
+                >
+                  {assessmentStarted ? "Stop Assessment" : "Create Assessment"}
+                </button>
+                <div id={tableStyles.preTableSpaceDiv}>
+                  {clockRender(assessmentStarted, assessmentTimer)}
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
         <table id={tableStyles.table}>
           <thead>
@@ -205,15 +453,36 @@ const Home: NextPage = () => {
             </tr>
           </thead>
           <tbody id={tableStyles.tbody}>
-            {problemList.map((val, i) => (
-              <QuestionTableRow
-                key={`QuestionNum${i}`}
-                question={val}
-                number={i + 1}
-              />
-            ))}
+            {problemList.map((val, i) => {
+              if (val.title === "None") {
+                return null;
+              }
+              return (
+                <QuestionTableRow
+                  key={`QuestionNum${i}`}
+                  question={val}
+                  number={i + 1}
+                />
+              );
+            })}
           </tbody>
         </table>
+        <div id="youtubeVids">
+          {vidList.map((vidLinkList, i) => (
+            <div key={`VidColNum${i}`}>
+              <h4>{problemList[i].title}</h4>
+              <div className={tableStyles.vidLinkRow} key={`VidRowNum${i}`}>
+                {vidLinkList.map((val: any, i: number) => (
+                  <VidLink
+                    vidTitle={val.vidTitle}
+                    vidLink={val.link}
+                    key={`VidNum${i}`}
+                  ></VidLink>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
         <p>
           Note: premium questions have been removed, which is why the blind 75
           only has 70 questions.
