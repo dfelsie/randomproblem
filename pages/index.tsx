@@ -191,7 +191,7 @@ const Home: NextPage = () => {
           </div>
         </div>
         <div id={tableStyles.formHolderHolder}>
-          <h4>Create practice test!</h4>
+          <h2>Create a practice test!</h2>
 
           <details id={"assessmentFormHolder"}>
             <summary id={tableStyles.formSum}>Create test form</summary>
